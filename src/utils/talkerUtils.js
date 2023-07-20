@@ -6,6 +6,15 @@ const findTalkerById = async (id) => {
   return findTalker;
 };
 
+const filterTalkerByName = async (q) => {
+  const talkers = await readData();
+  if (q) {
+    return talkers.filter(({ name }) => name.toLowerCase().includes(q.toLowerCase()));
+  }
+  return talkers;
+};
+
 module.exports = {
   findTalkerById,
+  filterTalkerByName,
 };

@@ -6,7 +6,7 @@ const validateAge = require('../middlewares/validateAge');
 const validateTalk = require('../middlewares/validateTalk');
 const validateWatchedAt = require('../middlewares/validateWatchedAt');
 const validateRate = require('../middlewares/validateRate');
-const { findTalkerById } = require('../utils/talkerUtils');
+const { findTalkerById, filterTalkerByName } = require('../utils/talkerUtils');
 const validateTalkerId = require('../middlewares/validateTalkerId');
 
 const router = express.Router();
@@ -15,6 +15,16 @@ router.get('/', async (req, res) => {
   try {
     const data = await readData();
     res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/search', validateToken, async (req, res) => {
+  try {
+    const { q } = req.query;
+    const foundTalkers = await filterTalkerByName(q);
+    res.status(200).json(foundTalkers);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
