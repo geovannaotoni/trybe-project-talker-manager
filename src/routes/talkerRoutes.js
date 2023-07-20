@@ -5,7 +5,7 @@ const validateName = require('../middlewares/validateName');
 const validateAge = require('../middlewares/validateAge');
 const validateTalk = require('../middlewares/validateTalk');
 const validateWatchedAt = require('../middlewares/validateWatchedAt');
-const validateRate = require('../middlewares/validateRate');
+const { validateRateOnBody, validateRateOnQuery } = require('../middlewares/validateRate');
 const { findTalkerById, filterTalkerByName } = require('../utils/talkerUtils');
 const validateTalkerId = require('../middlewares/validateTalkerId');
 
@@ -20,11 +20,19 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/search', validateToken, async (req, res) => {
+router.get('/search', 
+  validateToken, 
+  validateRateOnQuery,
+  async (req, res) => {
   try {
-    const { q } = req.query;
-    const foundTalkers = await filterTalkerByName(q);
-    res.status(200).json(foundTalkers);
+    const { q, rate } = req.query;
+    let filteredTalkers = await filterTalkerByName(q);
+
+    if (rate) {
+      filteredTalkers = filteredTalkers.filter((talker) => talker.talk.rate === Number(rate));
+    }
+
+    res.status(200).json(filteredTalkers);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -47,7 +55,7 @@ router.post('/',
   validateAge, 
   validateTalk, 
   validateWatchedAt, 
-  validateRate, 
+  validateRateOnBody, 
   async (req, res) => {
   try {
     const { name, age, talk } = req.body;
@@ -65,7 +73,7 @@ router.put('/:id',
   validateAge, 
   validateTalk, 
   validateWatchedAt, 
-  validateRate, 
+  validateRateOnBody, 
   async (req, res) => {
     try {
       const { id } = req.params;
