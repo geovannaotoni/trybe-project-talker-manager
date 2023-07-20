@@ -51,8 +51,20 @@ const updateData = async (id, updatedTalker) => {
   }
 };
 
+const deleteData = async (id) => {
+  try {
+    const oldData = await readData();
+    const filteredData = oldData.filter((talker) => talker.id !== id);
+    const updatedData = JSON.stringify(filteredData, null, 2);
+    await fs.writeFile(ABS_DATA_PATH, updatedData);
+  } catch (error) {
+    console.log(`Erro ao deletar informações do arquivo: ${error}`);
+  }
+};
+
 module.exports = {
   readData,
   writeData,
   updateData,
+  deleteData,
 };

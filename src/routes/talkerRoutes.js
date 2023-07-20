@@ -1,5 +1,5 @@
 const express = require('express');
-const { readData, writeData, updateData } = require('../utils/fsUtils');
+const { readData, writeData, updateData, deleteData } = require('../utils/fsUtils');
 const validateToken = require('../middlewares/validateToken');
 const validateName = require('../middlewares/validateName');
 const validateAge = require('../middlewares/validateAge');
@@ -62,6 +62,18 @@ router.put('/:id',
       const { name, age, talk } = req.body;
       const updatedTalker = await updateData(Number(id), { name, age, talk });
       res.status(200).json(updatedTalker);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+});
+
+router.delete('/:id', 
+  validateToken,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      await deleteData(Number(id));
+      res.status(204).end();
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
