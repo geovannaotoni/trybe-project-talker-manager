@@ -33,7 +33,26 @@ const writeData = async (newTalker) => {
   }
 };
 
+const updateData = async (id, updatedTalker) => {
+  try {
+    const oldData = await readData();
+    const updateTalker = { id, ...updatedTalker };
+
+    const updatedTalkers = oldData.map((talker) => {
+      if (talker.id === id) return updateTalker;
+      return talker;
+    });
+    
+    const updatedData = JSON.stringify(updatedTalkers, null, 2);
+    await fs.writeFile(ABS_DATA_PATH, updatedData);
+    return updateTalker;
+  } catch (error) {
+    console.log(`Erro na atualização do arquivo: ${error}`);
+  }
+};
+
 module.exports = {
   readData,
   writeData,
+  updateData,
 };
