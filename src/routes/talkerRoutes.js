@@ -12,6 +12,7 @@ const {
 } = require('../middlewares/validateRate');
 const { findTalkerById, filterTalkerByName } = require('../utils/talkerUtils');
 const validateTalkerId = require('../middlewares/validateTalkerId');
+const { findAll } = require('../db/talkerDB');
 
 const router = express.Router();
 
@@ -42,6 +43,15 @@ router.get('/search',
     }
 
     res.status(200).json(filteredTalkers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/db', async (req, res) => {
+  try {
+    const data = await findAll();
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
