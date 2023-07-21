@@ -1,12 +1,13 @@
+const rateIsValid = require('../utils/rateIsValid');
+
 const validateRateOnBody = (req, res, next) => {
   const { talk } = req.body;
-  const { rate } = talk;
 
-  if (rate === undefined) {
+  if (talk.rate === undefined) {
     return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
   }
 
-  if (rate < 1 || rate > 5 || !Number.isInteger(rate)) {
+  if (!rateIsValid(talk.rate)) {
     return res.status(400).json({ 
       message: 'O campo "rate" deve ser um número inteiro entre 1 e 5',
     });
@@ -18,7 +19,7 @@ const validateRateOnBody = (req, res, next) => {
 const validateRateOnQuery = (req, res, next) => {
   const { rate } = req.query;
   if (rate === undefined 
-    || (Number(rate) >= 1 && Number(rate) <= 5 && Number.isInteger(Number(rate)))) {
+    || rateIsValid(Number(rate))) {
     return next();
   }
 
@@ -27,7 +28,24 @@ const validateRateOnQuery = (req, res, next) => {
   });
 };
 
+const validateRatePatch = (req, res, next) => {
+  const { rate } = req.body;
+
+  if (rate === undefined) {
+    return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
+  }
+
+  if (!rateIsValid(rate)) {
+    return res.status(400).json({ 
+      message: 'O campo "rate" deve ser um número inteiro entre 1 e 5',
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   validateRateOnBody,
   validateRateOnQuery,
+  validateRatePatch,
 };

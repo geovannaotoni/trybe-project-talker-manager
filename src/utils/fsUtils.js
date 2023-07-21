@@ -42,7 +42,7 @@ const updateData = async (id, updatedTalker) => {
       if (talker.id === id) return updateTalker;
       return talker;
     });
-    
+
     const updatedData = JSON.stringify(updatedTalkers, null, 2);
     await fs.writeFile(ABS_DATA_PATH, updatedData);
     return updateTalker;

@@ -7,7 +7,9 @@ const validateTalk = require('../middlewares/validateTalk');
 const { 
   validateWatchedAtOnBody, validateWatchedAtOnQuery,
 } = require('../middlewares/validateWatchedAt');
-const { validateRateOnBody, validateRateOnQuery } = require('../middlewares/validateRate');
+const { 
+  validateRateOnBody, validateRateOnQuery, validateRatePatch,
+} = require('../middlewares/validateRate');
 const { findTalkerById, filterTalkerByName } = require('../utils/talkerUtils');
 const validateTalkerId = require('../middlewares/validateTalkerId');
 
@@ -98,6 +100,23 @@ router.delete('/:id',
     try {
       const { id } = req.params;
       await deleteData(Number(id));
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+});
+
+router.patch('/rate/:id',
+  validateToken,
+  validateTalkerId,
+  validateRatePatch,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { rate } = req.body;
+      const foundTalker = await findTalkerById(id);
+      foundTalker.talk.rate = rate;
+      await updateData(Number(id), foundTalker);
       res.status(204).end();
     } catch (error) {
       res.status(500).json({ message: error.message });
